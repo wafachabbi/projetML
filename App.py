@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 import joblib
 import warnings
 warnings.filterwarnings('ignore')
@@ -16,259 +15,197 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&display=swap');
 
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
-    background: #0a0e1a;
-    color: #e2e8f0;
+    background: #f8faff;
+    color: #1e293b;
 }
+.stApp { background: #f8faff; }
+.block-container { padding: 2rem 2.5rem; }
 
 /* ── Sidebar ── */
 [data-testid="stSidebar"] {
-    background: linear-gradient(180deg, #0d1117 0%, #0a0e1a 100%);
-    border-right: 1px solid rgba(99,102,241,.2);
+    background: linear-gradient(180deg, #ffffff 0%, #f1f5ff 100%);
+    border-right: 1px solid #e2e8f8;
+    box-shadow: 4px 0 20px rgba(99,102,241,.06);
 }
-[data-testid="stSidebar"] * { color: #94a3b8 !important; }
-[data-testid="stSidebar"] hr { border-color: rgba(99,102,241,.15); }
-
-/* ── Main background ── */
-.stApp { background: #0a0e1a; }
-.block-container { padding: 2rem 2.5rem; }
-
-/* ── Radio buttons ── */
+[data-testid="stSidebar"] * { color: #475569 !important; }
+[data-testid="stSidebar"] hr { border-color: #e2e8f8; }
 [data-testid="stSidebar"] .stRadio label {
-    background: rgba(99,102,241,.08) !important;
-    border: 1px solid rgba(99,102,241,.15) !important;
+    background: #f8faff !important;
+    border: 1px solid #e2e8f8 !important;
     border-radius: 10px !important;
     padding: .5rem 1rem !important;
     margin: .2rem 0 !important;
     transition: all .2s !important;
-    cursor: pointer !important;
 }
 [data-testid="stSidebar"] .stRadio label:hover {
-    background: rgba(99,102,241,.2) !important;
-    border-color: rgba(99,102,241,.4) !important;
+    background: #ede9fe !important;
+    border-color: #a5b4fc !important;
 }
 
 /* ── Hero ── */
 .hero {
-    background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 40%, #0c1a3a 100%);
-    border: 1px solid rgba(99,102,241,.25);
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a78bfa 100%);
     border-radius: 24px;
     padding: 3rem 3.5rem;
     margin-bottom: 2rem;
     position: relative;
     overflow: hidden;
+    box-shadow: 0 20px 60px rgba(99,102,241,.3);
 }
 .hero::before {
     content: '';
     position: absolute;
-    top: -60px; right: -60px;
-    width: 300px; height: 300px;
-    background: radial-gradient(circle, rgba(99,102,241,.15) 0%, transparent 70%);
+    top: -80px; right: -80px;
+    width: 320px; height: 320px;
+    background: rgba(255,255,255,.08);
     border-radius: 50%;
 }
 .hero::after {
     content: '';
     position: absolute;
-    bottom: -40px; left: 30%;
-    width: 200px; height: 200px;
-    background: radial-gradient(circle, rgba(139,92,246,.1) 0%, transparent 70%);
+    bottom: -50px; left: 25%;
+    width: 220px; height: 220px;
+    background: rgba(255,255,255,.05);
     border-radius: 50%;
 }
 .hero-badge {
     display: inline-flex; align-items: center; gap: .4rem;
-    background: rgba(99,102,241,.15);
-    border: 1px solid rgba(99,102,241,.3);
+    background: rgba(255,255,255,.2);
+    border: 1px solid rgba(255,255,255,.3);
     border-radius: 99px;
     padding: .3rem .9rem;
-    font-size: .7rem; font-weight: 600;
-    color: #a5b4fc;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
+    font-size: .68rem; font-weight: 600;
+    color: rgba(255,255,255,.9);
+    letter-spacing: 1.5px; text-transform: uppercase;
     margin-bottom: 1rem;
 }
 .hero-title {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 3rem; font-weight: 700;
-    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #818cf8 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1.1;
-    margin-bottom: .8rem;
+    font-size: 2.8rem; font-weight: 800;
+    color: #ffffff;
+    line-height: 1.1; margin-bottom: .8rem;
 }
-.hero-sub {
-    font-size: 1rem; color: #64748b; font-weight: 400; line-height: 1.6;
-    max-width: 600px;
-}
+.hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); font-weight: 400; line-height: 1.6; max-width: 580px; }
 
 /* ── KPI Cards ── */
-.kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin: 1.5rem 0;
-}
+.kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin: 1.5rem 0; }
 .kpi-card {
-    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-    border: 1px solid rgba(99,102,241,.2);
+    background: #ffffff;
+    border: 1px solid #e8edf8;
     border-radius: 18px;
     padding: 1.5rem;
     position: relative;
     overflow: hidden;
-    transition: transform .2s, border-color .2s;
+    box-shadow: 0 2px 16px rgba(99,102,241,.06);
+    transition: transform .2s, box-shadow .2s;
 }
-.kpi-card:hover { transform: translateY(-2px); border-color: rgba(99,102,241,.5); }
-.kpi-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
+.kpi-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(99,102,241,.12); }
+.kpi-card::after {
+    content: ''; position: absolute;
+    bottom: 0; left: 0; right: 0; height: 3px; border-radius: 0 0 18px 18px;
 }
-.kpi-card.v1::before { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
-.kpi-card.v2::before { background: linear-gradient(90deg, #06b6d4, #0891b2); }
-.kpi-card.v3::before { background: linear-gradient(90deg, #8b5cf6, #ec4899); }
-.kpi-card.v4::before { background: linear-gradient(90deg, #10b981, #059669); }
+.kpi-card.v1::after { background: linear-gradient(90deg,#6366f1,#8b5cf6); }
+.kpi-card.v2::after { background: linear-gradient(90deg,#06b6d4,#0891b2); }
+.kpi-card.v3::after { background: linear-gradient(90deg,#f59e0b,#f97316); }
+.kpi-card.v4::after { background: linear-gradient(90deg,#10b981,#059669); }
 .kpi-icon-wrap {
-    width: 42px; height: 42px;
-    border-radius: 12px;
+    width: 44px; height: 44px; border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
+    font-size: 1.3rem; margin-bottom: 1rem;
 }
-.kpi-card.v1 .kpi-icon-wrap { background: rgba(99,102,241,.15); }
-.kpi-card.v2 .kpi-icon-wrap { background: rgba(6,182,212,.15); }
-.kpi-card.v3 .kpi-icon-wrap { background: rgba(139,92,246,.15); }
-.kpi-card.v4 .kpi-icon-wrap { background: rgba(16,185,129,.15); }
-.kpi-val {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 2.2rem; font-weight: 700;
-    color: #f1f5f9; line-height: 1;
-}
-.kpi-lbl { font-size: .7rem; color: #475569; text-transform: uppercase; letter-spacing: 1.5px; margin-top: .4rem; }
-.kpi-trend { font-size: .78rem; color: #10b981; margin-top: .5rem; font-weight: 600; }
+.kpi-card.v1 .kpi-icon-wrap { background: #ede9fe; }
+.kpi-card.v2 .kpi-icon-wrap { background: #cffafe; }
+.kpi-card.v3 .kpi-icon-wrap { background: #fef3c7; }
+.kpi-card.v4 .kpi-icon-wrap { background: #d1fae5; }
+.kpi-val { font-family:'Space Grotesk',sans-serif; font-size:2rem; font-weight:800; color:#0f172a; line-height:1; }
+.kpi-lbl { font-size:.68rem; color:#94a3b8; text-transform:uppercase; letter-spacing:1.5px; margin-top:.4rem; }
+.kpi-trend { font-size:.78rem; color:#6366f1; margin-top:.5rem; font-weight:600; }
 
 /* ── Section header ── */
 .sec-head {
-    display: flex; align-items: center; gap: .8rem;
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1rem; font-weight: 700;
-    color: #e2e8f0;
+    display:flex; align-items:center; gap:.8rem;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:1rem; font-weight:700; color:#0f172a;
     margin: 2.5rem 0 1.2rem 0;
 }
-.sec-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
-    flex-shrink: 0;
-}
-.sec-line { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(99,102,241,.3), transparent); }
+.sec-dot { width:8px; height:8px; border-radius:50%; background:linear-gradient(135deg,#6366f1,#8b5cf6); flex-shrink:0; }
+.sec-line { flex:1; height:1px; background:linear-gradient(90deg,#e2e8f8,transparent); }
 
-/* ── Glass cards ── */
-.glass-card {
-    background: rgba(15,23,42,.8);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(99,102,241,.15);
-    border-radius: 18px;
-    padding: 1.5rem;
-    margin-bottom: 1rem;
+/* ── White cards ── */
+.w-card {
+    background:#ffffff; border:1px solid #e8edf8;
+    border-radius:18px; padding:1.5rem;
+    box-shadow:0 2px 16px rgba(99,102,241,.05);
+    margin-bottom:1rem;
 }
 
-/* ── DSO objective cards ── */
+/* ── DSO cards ── */
 .dso-card {
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-    border: 1px solid rgba(99,102,241,.2);
-    border-radius: 18px;
-    padding: 1.8rem;
-    height: 100%;
-    position: relative;
-    overflow: hidden;
-    transition: border-color .3s;
+    background:#ffffff; border:1px solid #e8edf8;
+    border-radius:18px; padding:1.8rem;
+    box-shadow:0 2px 16px rgba(99,102,241,.05);
+    position:relative; overflow:hidden;
+    transition: transform .2s, box-shadow .2s;
+    height:100%;
 }
-.dso-card:hover { border-color: rgba(99,102,241,.5); }
+.dso-card:hover { transform:translateY(-3px); box-shadow:0 8px 30px rgba(99,102,241,.12); }
 .dso-num {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 3.5rem; font-weight: 700;
-    position: absolute; top: 1rem; right: 1.5rem;
-    opacity: .06; color: #6366f1;
+    font-family:'Space Grotesk',sans-serif; font-size:4rem; font-weight:800;
+    position:absolute; top:.5rem; right:1.2rem;
+    opacity:.05; color:#6366f1;
 }
-.dso-icon { font-size: 2rem; margin-bottom: .8rem; }
-.dso-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: .95rem; font-weight: 700;
-    color: #e2e8f0; margin-bottom: .6rem;
-}
-.dso-desc { font-size: .82rem; color: #64748b; line-height: 1.7; }
+.dso-icon { font-size:2rem; margin-bottom:.8rem; }
+.dso-title { font-family:'Space Grotesk',sans-serif; font-size:.95rem; font-weight:700; color:#0f172a; margin-bottom:.6rem; }
+.dso-desc { font-size:.82rem; color:#64748b; line-height:1.7; }
 .dso-tag {
-    display: inline-block;
-    background: rgba(99,102,241,.15);
-    border: 1px solid rgba(99,102,241,.25);
-    border-radius: 99px;
-    padding: .2rem .7rem;
-    font-size: .68rem; color: #a5b4fc;
-    margin-top: .8rem; font-weight: 600;
+    display:inline-block;
+    background:#ede9fe; border-radius:99px;
+    padding:.25rem .75rem; font-size:.68rem;
+    color:#6366f1; margin-top:.8rem; font-weight:600;
 }
 
-/* ── Prediction result ── */
+/* ── Prediction ── */
 .pred-popular {
-    background: linear-gradient(135deg, rgba(16,185,129,.1), rgba(5,150,105,.05));
-    border: 1px solid rgba(16,185,129,.3);
-    border-radius: 18px; padding: 1.8rem; margin: 1rem 0;
+    background:linear-gradient(135deg,#f0fdf4,#dcfce7);
+    border:1.5px solid #86efac; border-radius:18px; padding:1.8rem; margin:1rem 0;
 }
 .pred-unpopular {
-    background: linear-gradient(135deg, rgba(239,68,68,.1), rgba(220,38,38,.05));
-    border: 1px solid rgba(239,68,68,.3);
-    border-radius: 18px; padding: 1.8rem; margin: 1rem 0;
+    background:linear-gradient(135deg,#fff7ed,#ffedd5);
+    border:1.5px solid #fdba74; border-radius:18px; padding:1.8rem; margin:1rem 0;
 }
-.pred-title {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.5rem; font-weight: 700; color: #f1f5f9;
-}
-.pred-score {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 2.5rem; font-weight: 700; margin-top: .5rem;
-}
+.pred-title { font-family:'Space Grotesk',sans-serif; font-size:1.4rem; font-weight:800; color:#0f172a; }
+.pred-score { font-family:'Space Grotesk',sans-serif; font-size:2.5rem; font-weight:800; margin-top:.5rem; }
 
 /* ── Rec cards ── */
 .rec-item {
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-    border: 1px solid rgba(99,102,241,.15);
-    border-radius: 14px;
-    padding: 1rem 1.2rem;
-    margin: .5rem 0;
-    display: flex; align-items: center; gap: 1rem;
-    transition: border-color .2s;
+    background:#ffffff; border:1px solid #e8edf8;
+    border-radius:14px; padding:1rem 1.2rem; margin:.5rem 0;
+    display:flex; align-items:center; gap:1rem;
+    box-shadow:0 1px 8px rgba(99,102,241,.04);
+    transition: border-color .2s, box-shadow .2s;
 }
-.rec-item:hover { border-color: rgba(99,102,241,.4); }
-.rec-rank {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1.4rem; font-weight: 700;
-    color: rgba(99,102,241,.4); min-width: 2.5rem;
-}
-.rec-title { font-weight: 600; font-size: .9rem; color: #e2e8f0; }
-.rec-meta { font-size: .75rem; color: #475569; margin-top: .2rem; }
-.rec-score {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 1rem; font-weight: 700; color: #6366f1;
-    white-space: nowrap;
-}
-.bar-bg { background: rgba(99,102,241,.1); border-radius: 99px; height: 3px; margin-top: .4rem; }
-.bar-fg { background: linear-gradient(90deg, #6366f1, #8b5cf6); height: 3px; border-radius: 99px; }
+.rec-item:hover { border-color:#a5b4fc; box-shadow:0 4px 16px rgba(99,102,241,.1); }
+.rec-rank { font-family:'Space Grotesk',sans-serif; font-size:1.3rem; font-weight:800; color:#e0e7ff; min-width:2.5rem; }
+.rec-title { font-weight:600; font-size:.9rem; color:#0f172a; }
+.rec-meta { font-size:.75rem; color:#94a3b8; margin-top:.2rem; }
+.rec-score { font-family:'Space Grotesk',sans-serif; font-size:1rem; font-weight:800; color:#6366f1; white-space:nowrap; }
+.bar-bg { background:#f1f5f9; border-radius:99px; height:3px; margin-top:.4rem; }
+.bar-fg { background:linear-gradient(90deg,#6366f1,#8b5cf6); height:3px; border-radius:99px; }
 
-/* ── Streamlit overrides ── */
+/* ── Buttons ── */
 .stButton > button {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
-    color: white !important; border: none !important;
-    border-radius: 12px !important; font-weight: 600 !important;
-    padding: .6rem 1.5rem !important;
-    transition: opacity .2s !important;
+    background:linear-gradient(135deg,#6366f1,#8b5cf6) !important;
+    color:white !important; border:none !important;
+    border-radius:12px !important; font-weight:600 !important;
+    padding:.6rem 1.5rem !important; transition:opacity .2s !important;
+    box-shadow:0 4px 15px rgba(99,102,241,.3) !important;
 }
-.stButton > button:hover { opacity: .85 !important; }
-.stSelectbox > div, .stSlider, .stNumberInput { color: #e2e8f0 !important; }
-[data-testid="stDataFrame"] { border-radius: 14px; overflow: hidden; }
-#MainMenu, footer, header { visibility: hidden; }
+.stButton > button:hover { opacity:.88 !important; }
+#MainMenu, footer, header { visibility:hidden; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -300,15 +237,15 @@ def prepare_features(df):
     df2['lectures_per_hour'] = (df2['num_lectures']/df2['content_duration'].replace(0,np.nan)).fillna(0)
     return df2
 
-def dark_fig(w=6, h=4):
+def light_fig(w=6, h=4):
     fig, ax = plt.subplots(figsize=(w, h))
-    fig.patch.set_facecolor('#0f172a')
-    ax.set_facecolor('#0f172a')
-    ax.tick_params(colors='#475569', labelsize=8)
-    for spine in ax.spines.values(): spine.set_edgecolor('#1e293b')
-    ax.title.set_color('#e2e8f0')
-    ax.xaxis.label.set_color('#475569')
-    ax.yaxis.label.set_color('#475569')
+    fig.patch.set_facecolor('#ffffff')
+    ax.set_facecolor('#f8faff')
+    ax.tick_params(colors='#94a3b8', labelsize=8)
+    for spine in ax.spines.values(): spine.set_edgecolor('#e2e8f8')
+    ax.title.set_color('#0f172a')
+    ax.xaxis.label.set_color('#94a3b8')
+    ax.yaxis.label.set_color('#94a3b8')
     return fig, ax
 
 df = load_data()
@@ -318,23 +255,23 @@ model, feat_cols, threshold, kmeans, scaler, tfidf, knn_model, matrix = load_mod
 with st.sidebar:
     st.markdown("""
     <div style='padding:1.5rem 0 1.2rem;text-align:center;'>
-        <div style='font-size:2.2rem;margin-bottom:.3rem;'>🧠</div>
-        <div style='font-family:Space Grotesk,sans-serif;font-size:1.4rem;font-weight:700;
-                    background:linear-gradient(135deg,#a5b4fc,#818cf8);
+        <div style='font-size:2.2rem;margin-bottom:.4rem;'>🧠</div>
+        <div style='font-family:Space Grotesk,sans-serif;font-size:1.4rem;font-weight:800;
+                    background:linear-gradient(135deg,#6366f1,#8b5cf6);
                     -webkit-background-clip:text;-webkit-text-fill-color:transparent;'>Smartek AI</div>
-        <div style='font-size:.6rem;color:#334155;letter-spacing:3px;text-transform:uppercase;margin-top:.2rem;'>Intelligence Platform</div>
+        <div style='font-size:.6rem;color:#cbd5e1;letter-spacing:3px;text-transform:uppercase;margin-top:.2rem;'>Intelligence Platform</div>
     </div>""", unsafe_allow_html=True)
     st.markdown("---")
-    st.markdown("<div style='font-size:.62rem;color:#334155;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:.8rem;padding-left:.3rem;'>Navigation</div>", unsafe_allow_html=True)
+    st.markdown("<div style='font-size:.62rem;color:#cbd5e1;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:.8rem;padding-left:.3rem;'>Navigation</div>", unsafe_allow_html=True)
     page = st.radio("", ["🏠  Vue Générale","🎯  DSO 1 — Classification","🔵  DSO 2 — Clustering","📚  DSO 3 — Recommandation"])
     st.markdown("---")
     st.markdown("""
-    <div style='font-size:.72rem;color:#334155;line-height:2.4;padding-left:.3rem;'>
-        <div style='color:#6366f1;font-weight:700;font-size:.75rem;margin-bottom:.3rem;'>📦 Dataset</div>
+    <div style='font-size:.72rem;color:#94a3b8;line-height:2.4;padding-left:.3rem;'>
+        <div style='color:#6366f1;font-weight:700;font-size:.75rem;margin-bottom:.2rem;'>📦 Dataset</div>
         Udemy Courses · 3 678 cours<br>4 sujets · 4 niveaux<br><br>
-        <div style='color:#6366f1;font-weight:700;font-size:.75rem;margin-bottom:.3rem;'>🤖 Modèles</div>
+        <div style='color:#6366f1;font-weight:700;font-size:.75rem;margin-bottom:.2rem;'>🤖 Modèles</div>
         XGBoost · KMeans<br>TF-IDF + KNN Cosine<br><br>
-        <div style='color:#6366f1;font-weight:700;font-size:.75rem;margin-bottom:.3rem;'>📐 Méthode</div>
+        <div style='color:#6366f1;font-weight:700;font-size:.75rem;margin-bottom:.2rem;'>📐 Méthode</div>
         CRISP-DM
     </div>""", unsafe_allow_html=True)
 
@@ -351,43 +288,21 @@ if page == "🏠  Vue Générale":
 
     total=len(df); avg_sub=int(df['num_subscribers'].mean())
     free_pct=round((df['price']==0).mean()*100,1); avg_rev=int(df['num_reviews'].mean())
-
     st.markdown(f"""
     <div class="kpi-grid">
-        <div class="kpi-card v1">
-            <div class="kpi-icon-wrap">🎓</div>
-            <div class="kpi-val">{total:,}</div>
-            <div class="kpi-lbl">Cours indexés</div>
-            <div class="kpi-trend">↑ catalogue complet</div>
-        </div>
-        <div class="kpi-card v2">
-            <div class="kpi-icon-wrap">👥</div>
-            <div class="kpi-val">{avg_sub:,}</div>
-            <div class="kpi-lbl">Inscrits moyens</div>
-            <div class="kpi-trend">par cours</div>
-        </div>
-        <div class="kpi-card v3">
-            <div class="kpi-icon-wrap">⭐</div>
-            <div class="kpi-val">{avg_rev:,}</div>
-            <div class="kpi-lbl">Avis moyens</div>
-            <div class="kpi-trend">par cours</div>
-        </div>
-        <div class="kpi-card v4">
-            <div class="kpi-icon-wrap">🆓</div>
-            <div class="kpi-val">{free_pct}%</div>
-            <div class="kpi-lbl">Cours gratuits</div>
-            <div class="kpi-trend">du catalogue</div>
-        </div>
+        <div class="kpi-card v1"><div class="kpi-icon-wrap">🎓</div><div class="kpi-val">{total:,}</div><div class="kpi-lbl">Cours indexés</div><div class="kpi-trend">↑ catalogue complet</div></div>
+        <div class="kpi-card v2"><div class="kpi-icon-wrap">👥</div><div class="kpi-val">{avg_sub:,}</div><div class="kpi-lbl">Inscrits moyens</div><div class="kpi-trend">par cours</div></div>
+        <div class="kpi-card v3"><div class="kpi-icon-wrap">⭐</div><div class="kpi-val">{avg_rev:,}</div><div class="kpi-lbl">Avis moyens</div><div class="kpi-trend">par cours</div></div>
+        <div class="kpi-card v4"><div class="kpi-icon-wrap">🆓</div><div class="kpi-val">{free_pct}%</div><div class="kpi-lbl">Cours gratuits</div><div class="kpi-trend">du catalogue</div></div>
     </div>""", unsafe_allow_html=True)
 
     st.markdown('<div class="sec-head"><div class="sec-dot"></div>Objectifs Data Science<div class="sec-line"></div></div>', unsafe_allow_html=True)
     c1,c2,c3 = st.columns(3, gap="medium")
-    dso_items = [
+    for col,icon,num,title,desc,tag in [
         (c1,"🎯","01","DSO 1 — Classification","Prédire si un cours sera populaire ou non à partir de ses caractéristiques.","XGBoost"),
         (c2,"🔵","02","DSO 2 — Clustering","Segmenter les cours en groupes homogènes via KMeans optimisé.","KMeans + Silhouette"),
         (c3,"📚","03","DSO 3 — Recommandation","Suggérer des formations similaires via TF-IDF + similarité cosinus.","TF-IDF + KNN"),
-    ]
-    for col,icon,num,title,desc,tag in dso_items:
+    ]:
         with col:
             st.markdown(f"""
             <div class="dso-card">
@@ -401,30 +316,30 @@ if page == "🏠  Vue Générale":
     st.markdown('<div class="sec-head"><div class="sec-dot"></div>Aperçu du Dataset<div class="sec-line"></div></div>', unsafe_allow_html=True)
     ca,cb,cc = st.columns(3, gap="medium")
     with ca:
-        fig,ax = dark_fig(5,3.5)
+        fig,ax = light_fig(5,3.5)
         sc = df['subject'].value_counts()
         bars = ax.barh(sc.index, sc.values, color=GRAD[:len(sc)], height=.5)
-        ax.bar_label(bars, fontsize=8, padding=4, color='#94a3b8')
+        ax.bar_label(bars, fontsize=8, padding=4, color='#64748b')
         ax.set_title("Cours par Sujet", fontsize=10, fontweight='bold')
         ax.spines[['top','right','left','bottom']].set_visible(False)
         ax.tick_params(left=False, bottom=False)
         plt.tight_layout(); st.pyplot(fig)
     with cb:
-        fig,ax = dark_fig(5,3.5)
+        fig,ax = light_fig(5,3.5)
         lv = df['level'].value_counts()
         wedges,texts,autotexts = ax.pie(
             lv.values, labels=lv.index, colors=GRAD[:len(lv)],
             autopct='%1.0f%%', startangle=90,
-            textprops={'fontsize':8,'color':'#94a3b8'},
-            wedgeprops={'edgecolor':'#0f172a','linewidth':2.5})
-        for at in autotexts: at.set_color('#e2e8f0'); at.set_fontweight('bold')
+            textprops={'fontsize':8,'color':'#475569'},
+            wedgeprops={'edgecolor':'white','linewidth':2.5})
+        for at in autotexts: at.set_fontweight('bold'); at.set_color('#0f172a')
         ax.set_title("Répartition par Niveau", fontsize=10, fontweight='bold')
         plt.tight_layout(); st.pyplot(fig)
     with cc:
-        fig,ax = dark_fig(5,3.5)
+        fig,ax = light_fig(5,3.5)
         sa = df.groupby('subject')['num_subscribers'].mean().sort_values()
         bars = ax.barh(sa.index, sa.values, color=GRAD[:len(sa)], height=.5)
-        ax.bar_label(bars, fmt='%.0f', fontsize=7, padding=4, color='#94a3b8')
+        ax.bar_label(bars, fmt='%.0f', fontsize=7, padding=4, color='#64748b')
         ax.set_title("Inscrits moyens / Sujet", fontsize=10, fontweight='bold')
         ax.spines[['top','right','left','bottom']].set_visible(False)
         ax.tick_params(left=False, bottom=False)
@@ -432,8 +347,7 @@ if page == "🏠  Vue Générale":
 
     st.markdown('<div class="sec-head"><div class="sec-dot"></div>Top 10 Cours<div class="sec-line"></div></div>', unsafe_allow_html=True)
     top10 = df.nlargest(10,'num_subscribers')[['course_title','subject','level','price','num_subscribers','num_reviews']].reset_index(drop=True)
-    top10.index += 1
-    top10.columns = ['Titre','Sujet','Niveau','Prix ($)','Inscrits','Avis']
+    top10.index += 1; top10.columns = ['Titre','Sujet','Niveau','Prix ($)','Inscrits','Avis']
     st.dataframe(top10.style.background_gradient(subset=['Inscrits'], cmap='Purples'), use_container_width=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -444,13 +358,8 @@ elif page == "🎯  DSO 1 — Classification":
     <div class="hero">
         <div class="hero-badge">✦ DSO 1 · XGBoost · Classification Binaire</div>
         <div class="hero-title">Prédiction de Popularité</div>
-        <div class="hero-sub">Déterminez si un cours Udemy atteindra le seuil de popularité grâce à notre modèle XGBoost entraîné sur 3 678 cours.</div>
+        <div class="hero-sub">Déterminez si un cours Udemy atteindra le seuil de popularité grâce à notre modèle XGBoost.</div>
     </div>""", unsafe_allow_html=True)
-
-    acc = 0.0
-    try:
-        from sklearn.metrics import accuracy_score
-    except: pass
 
     st.markdown(f"""
     <div class="kpi-grid">
@@ -461,20 +370,18 @@ elif page == "🎯  DSO 1 — Classification":
     </div>""", unsafe_allow_html=True)
 
     col_form, col_imp = st.columns([3,2], gap="large")
-
     with col_form:
         st.markdown('<div class="sec-head"><div class="sec-dot"></div>Simulateur de cours<div class="sec-line"></div></div>', unsafe_allow_html=True)
-        with st.container():
-            r1,r2 = st.columns(2)
-            with r1:
-                subject = st.selectbox("📂 Sujet", df['subject'].unique())
-                level   = st.selectbox("📊 Niveau", df['level'].unique())
-                is_paid = st.radio("💳 Type", ["Payant","Gratuit"], horizontal=True)
-            with r2:
-                price    = st.slider("💰 Prix ($)", 0, 200, 50) if is_paid=="Payant" else 0
-                num_lec  = st.slider("🎬 Leçons", 0, 200, 30)
-                duration = st.slider("⏱ Durée (h)", 0.0, 40.0, 5.0, .5)
-                reviews  = st.number_input("⭐ Reviews estimées", 0, 5000, 100)
+        r1,r2 = st.columns(2)
+        with r1:
+            subject = st.selectbox("📂 Sujet", df['subject'].unique())
+            level   = st.selectbox("📊 Niveau", df['level'].unique())
+            is_paid = st.radio("💳 Type", ["Payant","Gratuit"], horizontal=True)
+        with r2:
+            price    = st.slider("💰 Prix ($)", 0, 200, 50) if is_paid=="Payant" else 0
+            num_lec  = st.slider("🎬 Leçons", 0, 200, 30)
+            duration = st.slider("⏱ Durée (h)", 0.0, 40.0, 5.0, .5)
+            reviews  = st.number_input("⭐ Reviews estimées", 0, 5000, 100)
 
         if st.button("🚀  Analyser ce cours", use_container_width=True):
             rps = reviews/100 if reviews>0 else 0
@@ -494,34 +401,33 @@ elif page == "🎯  DSO 1 — Classification":
             if pred==1:
                 st.markdown(f"""
                 <div class="pred-popular">
-                    <div style="font-size:.75rem;color:#10b981;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:.5rem;">✓ Résultat</div>
+                    <div style="font-size:.7rem;color:#16a34a;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:.5rem;">✓ Résultat</div>
                     <div class="pred-title">🏆 Cours Populaire</div>
                     <div style="font-size:.85rem;color:#64748b;margin-top:.3rem;">Dépasse probablement {threshold:,.0f} inscrits</div>
-                    <div class="pred-score" style="color:#10b981;">{proba[1]*100:.1f}%</div>
-                    <div style="font-size:.75rem;color:#475569;">indice de confiance</div>
+                    <div class="pred-score" style="color:#16a34a;">{proba[1]*100:.1f}%</div>
+                    <div style="font-size:.75rem;color:#94a3b8;">indice de confiance</div>
                 </div>""", unsafe_allow_html=True)
             else:
                 st.markdown(f"""
                 <div class="pred-unpopular">
-                    <div style="font-size:.75rem;color:#ef4444;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:.5rem;">✗ Résultat</div>
+                    <div style="font-size:.7rem;color:#ea580c;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:.5rem;">✗ Résultat</div>
                     <div class="pred-title">📉 Cours Peu Populaire</div>
                     <div style="font-size:.85rem;color:#64748b;margin-top:.3rem;">Risque de ne pas atteindre {threshold:,.0f} inscrits</div>
-                    <div class="pred-score" style="color:#ef4444;">{proba[0]*100:.1f}%</div>
-                    <div style="font-size:.75rem;color:#475569;">indice de confiance</div>
+                    <div class="pred-score" style="color:#ea580c;">{proba[0]*100:.1f}%</div>
+                    <div style="font-size:.75rem;color:#94a3b8;">indice de confiance</div>
                 </div>""", unsafe_allow_html=True)
-            fig,ax = dark_fig(6,.8)
-            ax.barh([""], [proba[0]], color='#ef4444', height=.4, label='Non populaire', alpha=.8)
-            ax.barh([""], [proba[1]], left=[proba[0]], color='#10b981', height=.4, label='Populaire', alpha=.8)
+            fig,ax = light_fig(6,.8)
+            ax.barh([""], [proba[0]], color='#fca5a5', height=.4, label='Non populaire')
+            ax.barh([""], [proba[1]], left=[proba[0]], color='#86efac', height=.4, label='Populaire')
             ax.set_xlim(0,1); ax.set_yticks([])
-            ax.legend(loc='upper right', fontsize=8, labelcolor='#94a3b8', framealpha=0)
+            ax.legend(loc='upper right', fontsize=8, framealpha=0)
             ax.spines[['top','right','left','bottom']].set_visible(False)
             plt.tight_layout(); st.pyplot(fig)
 
     with col_imp:
         st.markdown('<div class="sec-head"><div class="sec-dot"></div>Feature Importance<div class="sec-line"></div></div>', unsafe_allow_html=True)
         imp = pd.DataFrame({'F':feat_cols,'S':model.feature_importances_}).sort_values('S',ascending=False).head(10)
-        fig,ax = dark_fig(5,5)
-        colors = [GRAD[0] if i==0 else f'#{hex(int(99+i*8))[2:]}66f1' for i in range(len(imp))]
+        fig,ax = light_fig(5,5)
         colors = [GRAD[min(i,len(GRAD)-1)] for i in range(len(imp))]
         ax.barh(imp['F'][::-1], imp['S'][::-1], color=colors[::-1], height=.55)
         ax.set_title("Top 10 Features — XGBoost", fontsize=10, fontweight='bold')
@@ -530,12 +436,12 @@ elif page == "🎯  DSO 1 — Classification":
         plt.tight_layout(); st.pyplot(fig)
 
         st.markdown('<div class="sec-head"><div class="sec-dot"></div>Distribution Inscrits<div class="sec-line"></div></div>', unsafe_allow_html=True)
-        fig,ax = dark_fig(5,3)
+        fig,ax = light_fig(5,3)
         ax.hist(df['num_subscribers'].clip(upper=df['num_subscribers'].quantile(.95)),
-                bins=40, color='#6366f1', edgecolor='#0f172a', linewidth=.5, alpha=.8)
-        ax.axvline(threshold, color='#10b981', linewidth=2, linestyle='--', label=f'Seuil: {threshold:,.0f}')
+                bins=40, color='#a5b4fc', edgecolor='white', linewidth=.5)
+        ax.axvline(threshold, color='#6366f1', linewidth=2, linestyle='--', label=f'Seuil: {threshold:,.0f}')
         ax.set_title("Distribution inscrits", fontsize=10, fontweight='bold')
-        ax.legend(fontsize=8, labelcolor='#94a3b8', framealpha=0)
+        ax.legend(fontsize=8, framealpha=0)
         ax.spines[['top','right','left','bottom']].set_visible(False)
         ax.tick_params(left=False, bottom=False)
         plt.tight_layout(); st.pyplot(fig)
@@ -576,23 +482,23 @@ elif page == "🔵  DSO 2 — Clustering":
     csc, csil = st.columns([3,2], gap="large")
     with csc:
         st.markdown('<div class="sec-head"><div class="sec-dot"></div>Visualisation PCA 2D<div class="sec-line"></div></div>', unsafe_allow_html=True)
-        fig,ax = dark_fig(7,5)
+        fig,ax = light_fig(7,5)
         for i in range(best_k):
             mask = labels==i
             ax.scatter(coords[mask,0], coords[mask,1], c=GRAD[i%len(GRAD)],
-                       s=20, alpha=.6, label=f"Cluster {i}", edgecolors='none')
+                       s=22, alpha=.65, label=f"Cluster {i}", edgecolors='white', linewidths=.3)
         ax.set_title(f"Segmentation en {best_k} clusters — PCA", fontsize=11, fontweight='bold')
-        legend = ax.legend(fontsize=8, framealpha=0, labelcolor='#94a3b8')
+        ax.legend(fontsize=8, framealpha=0)
         ax.spines[['top','right','left','bottom']].set_visible(False)
         ax.tick_params(left=False, bottom=False)
         plt.tight_layout(); st.pyplot(fig)
 
     with csil:
         st.markdown('<div class="sec-head"><div class="sec-dot"></div>Taille des clusters<div class="sec-line"></div></div>', unsafe_allow_html=True)
-        fig,ax = dark_fig(5,3)
+        fig,ax = light_fig(5,3)
         bars = ax.bar([f"C{i}" for i in csizes.index], csizes.values,
-                      color=GRAD[:len(csizes)], width=.6, edgecolor='#0f172a', linewidth=1.5)
-        ax.bar_label(bars, fontsize=8, padding=3, color='#94a3b8')
+                      color=GRAD[:len(csizes)], width=.6, edgecolor='white', linewidth=1.5)
+        ax.bar_label(bars, fontsize=8, padding=3, color='#64748b')
         ax.spines[['top','right','left','bottom']].set_visible(False)
         ax.tick_params(left=False, bottom=False)
         plt.tight_layout(); st.pyplot(fig)
@@ -608,11 +514,11 @@ elif page == "🔵  DSO 2 — Clustering":
     df2m = df2.copy(); df2m['subject'] = df['subject'].values
     cross = pd.crosstab(df2m['cluster'], df2m['subject'])
     cross.index = [f"Cluster {i}" for i in cross.index]
-    fig,ax = dark_fig(12,3.5)
+    fig,ax = light_fig(12,3.5)
     cross.plot(kind='bar', ax=ax, width=.7, color=GRAD[:len(cross.columns)])
     ax.set_title("Distribution sujets par cluster", fontsize=11, fontweight='bold')
     ax.set_xlabel(""); ax.tick_params(axis='x', rotation=0, labelsize=9)
-    legend = ax.legend(fontsize=8, loc='upper right', framealpha=0, labelcolor='#94a3b8')
+    ax.legend(fontsize=8, loc='upper right', framealpha=0)
     ax.spines[['top','right','left','bottom']].set_visible(False)
     ax.tick_params(left=False, bottom=False)
     plt.tight_layout(); st.pyplot(fig)
@@ -625,7 +531,7 @@ elif page == "📚  DSO 3 — Recommandation":
     <div class="hero">
         <div class="hero-badge">✦ DSO 3 · TF-IDF · Similarité Cosinus</div>
         <div class="hero-title">Moteur de Recommandation</div>
-        <div class="hero-sub">Découvrez des cours similaires grâce à notre moteur TF-IDF + KNN basé sur la similarité cosinus entre 3 678 cours.</div>
+        <div class="hero-sub">Découvrez des cours similaires grâce à notre moteur TF-IDF + KNN basé sur la similarité cosinus.</div>
     </div>""", unsafe_allow_html=True)
 
     st.markdown(f"""
@@ -658,10 +564,10 @@ elif page == "📚  DSO 3 — Recommandation":
         ref = df[df['course_title']==selected].iloc[0]
         paid_str = f"{int(ref['price'])}$" if ref['price']>0 else "Gratuit"
         st.markdown(f"""
-        <div class="glass-card" style="border-left:3px solid #6366f1;margin-bottom:1.5rem;">
+        <div class="w-card" style="border-left:4px solid #6366f1;margin-bottom:1.5rem;">
             <div style="font-size:.65rem;color:#6366f1;text-transform:uppercase;letter-spacing:2px;font-weight:700;margin-bottom:.5rem;">Cours de référence</div>
-            <div style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#e2e8f0;margin-bottom:.5rem;">{ref['course_title']}</div>
-            <div style="font-size:.8rem;color:#475569;">
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#0f172a;margin-bottom:.5rem;">{ref['course_title']}</div>
+            <div style="font-size:.8rem;color:#94a3b8;">
                 📂 {ref['subject']} &nbsp;·&nbsp; 📊 {ref['level']} &nbsp;·&nbsp; 💰 {paid_str}
                 &nbsp;·&nbsp; 👥 {int(ref['num_subscribers']):,} inscrits
                 &nbsp;·&nbsp; ⭐ {int(ref['num_reviews']):,} avis
@@ -694,15 +600,15 @@ elif page == "📚  DSO 3 — Recommandation":
 
         with cr:
             st.markdown('<div class="sec-head"><div class="sec-dot"></div>Scores de similarité<div class="sec-line"></div></div>', unsafe_allow_html=True)
-            fig,ax = dark_fig(5,4)
-            colors = [GRAD[0] if s>=recs['similarity'].mean() else '#1e293b' for s in recs['similarity']]
+            fig,ax = light_fig(5,4)
+            colors = ['#6366f1' if s>=recs['similarity'].mean() else '#e0e7ff' for s in recs['similarity']]
             bars = ax.bar(range(1,len(recs)+1), recs['similarity']*100,
-                          color=colors, width=.6, edgecolor='#0f172a', linewidth=1.5)
+                          color=colors, width=.6, edgecolor='white', linewidth=1.5)
             ax.set_ylim(0,115)
             ax.set_xticks(range(1,len(recs)+1))
             ax.set_xticklabels([f"#{i+1}" for i in range(len(recs))], fontsize=8)
-            ax.bar_label(bars, fmt='%.0f%%', fontsize=7, padding=2, color='#94a3b8')
+            ax.bar_label(bars, fmt='%.0f%%', fontsize=7, padding=2, color='#64748b')
             ax.set_title("Similarité cosinus (%)", fontsize=10, fontweight='bold')
             ax.spines[['top','right','left','bottom']].set_visible(False)
-            ax.tick_params(left=False)
+            ax.tick_params(left=False, bottom=False)
             plt.tight_layout(); st.pyplot(fig)
