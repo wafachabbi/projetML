@@ -51,13 +51,17 @@ html, body, [class*="css"] { font-family:'Inter',sans-serif; background:#f9fafb;
 /* Page header */
 .page-header {
     margin-bottom:2rem;
-    padding-bottom:1.2rem;
-    border-bottom:1px solid #e5e7eb;
+    margin-top:1rem;
+    padding:1.5rem 2rem;
+    background:#fff;
+    border-radius:14px;
+    border:1px solid #e5e7eb;
+    box-shadow:0 1px 4px rgba(0,0,0,.04);
 }
 .page-title {
-    font-size:1.6rem; font-weight:800; color:#111827; line-height:1.2;
+    font-size:1.8rem; font-weight:800; color:#111827; line-height:1.2;
 }
-.page-sub { font-size:.88rem; color:#6b7280; margin-top:.3rem; }
+.page-sub { font-size:.9rem; color:#6b7280; margin-top:.4rem; }
 
 /* KPI */
 .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.9rem; margin:1.5rem 0; }
