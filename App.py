@@ -31,21 +31,30 @@ html, body, [class*="css"] {
     border-right: none;
     box-shadow: 4px 0 24px rgba(14,165,233,.25);
 }
-[data-testid="stSidebar"] * { color: #e0f2fe !important; }
+[data-testid="stSidebar"] * { color: #ffffff !important; }
 [data-testid="stSidebar"] hr { border-color: rgba(255,255,255,.15); }
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] span,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] div { color: #ffffff !important; }
+[data-testid="stSidebar"] .stRadio > div { gap: .3rem !important; }
 [data-testid="stSidebar"] .stRadio label {
-    background: rgba(255,255,255,.1) !important;
-    border: 1px solid rgba(255,255,255,.2) !important;
+    background: rgba(255,255,255,.12) !important;
+    border: 1px solid rgba(255,255,255,.25) !important;
     border-radius: 12px !important;
     padding: .55rem 1rem !important;
-    margin: .25rem 0 !important;
+    margin: .15rem 0 !important;
     transition: all .2s !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
+    display: flex !important;
+    align-items: center !important;
+    color: #ffffff !important;
 }
 [data-testid="stSidebar"] .stRadio label:hover {
-    background: rgba(255,255,255,.22) !important;
-    border-color: rgba(255,255,255,.4) !important;
+    background: rgba(255,255,255,.25) !important;
+    border-color: rgba(255,255,255,.5) !important;
 }
+[data-testid="stSidebar"] .stRadio input[type="radio"] { accent-color: #ffffff; }
 
 /* ── Hero banner ── */
 .hero {
