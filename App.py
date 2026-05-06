@@ -196,7 +196,11 @@ html, body, [class*="css"] {
     transition: opacity .2s !important;
 }
 .stButton > button:hover { opacity:.88 !important; }
-#MainMenu, footer, header { visibility:hidden; }
+footer { visibility:hidden; }
+/* Force sidebar open */
+[data-testid="stSidebar"] { min-width: 260px !important; max-width: 260px !important; }
+[data-testid="collapsedControl"] { display: none !important; }
+section[data-testid="stSidebar"] > div { width: 260px !important; }
 </style>
 """, unsafe_allow_html=True)
 
