@@ -195,19 +195,19 @@ with st.sidebar:
     st.markdown("---")
     page = st.radio("", [
         "🏠  Vue Générale",
-        "🎯  DSO 1 — Classification",
-        "🔵  DSO 2 — Clustering",
-        "📚  DSO 3 — Recommandation"
+        "🎯  Prédiction de Popularité",
+        "🔵  Segmentation des Cours",
+        "📚  Suggestions de Cours"
     ])
     st.markdown("---")
     st.markdown("""
     <div style='font-size:.73rem;color:rgba(199,210,254,.5);line-height:2.2;padding:.2rem .3rem;'>
-        <div style='color:#818cf8;font-weight:700;margin-bottom:.2rem;'>Dataset</div>
-        3 678 cours · 4 sujets<br><br>
-        <div style='color:#818cf8;font-weight:700;margin-bottom:.2rem;'>Modèles</div>
-        XGBoost · KMeans<br>TF-IDF + KNN<br><br>
-        <div style='color:#818cf8;font-weight:700;margin-bottom:.2rem;'>Méthode</div>
-        CRISP-DM
+        <div style='color:#818cf8;font-weight:700;margin-bottom:.2rem;'>Catalogue</div>
+        3 678 cours · 4 catégories<br><br>
+        <div style='color:#818cf8;font-weight:700;margin-bottom:.2rem;'>Fonctionnalités</div>
+        Prédiction · Groupes<br>Recommandations<br><br>
+        <div style='color:#818cf8;font-weight:700;margin-bottom:.2rem;'>Plateforme</div>
+        Udemy · Intelligence IA
     </div>""", unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -217,7 +217,7 @@ if page == "🏠  Vue Générale":
     st.markdown("""
     <div class="page-header">
         <div class="page-title">🧠 Smartek AI Dashboard</div>
-        <div class="page-sub">Analyse intelligente des cours Udemy · Classification · Clustering · Recommandation</div>
+        <div class="page-sub">Analyse intelligente des cours Udemy · Prédiction · Segmentation · Recommandation</div>
     </div>""", unsafe_allow_html=True)
 
     total=len(df); avg_sub=int(df['num_subscribers'].mean())
@@ -243,12 +243,12 @@ if page == "🏠  Vue Générale":
         </div>
     </div>""", unsafe_allow_html=True)
 
-    st.markdown('<div class="sec">Objectifs Data Science <span></span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="sec">Ce que fait Smartek AI <span></span></div>', unsafe_allow_html=True)
     c1,c2,c3 = st.columns(3, gap="medium")
     for col,icon,title,desc,chip in [
-        (c1,"🎯","DSO 1 — Classification","Prédire si un cours sera populaire ou non à partir de ses caractéristiques.","XGBoost"),
-        (c2,"🔵","DSO 2 — Clustering","Segmenter les cours en groupes homogènes via KMeans optimisé.","KMeans + Silhouette"),
-        (c3,"📚","DSO 3 — Recommandation","Suggérer des formations similaires via TF-IDF + similarité cosinus.","TF-IDF + KNN"),
+        (c1,"🎯","Prédiction de Popularité","Savoir à l'avance si un cours va attirer beaucoup d'apprenants, pour mieux orienter la création de contenu.","Intelligence Prédictive"),
+        (c2,"🔵","Segmentation des Cours","Regrouper automatiquement les cours similaires pour mieux comprendre le catalogue et cibler les bons apprenants.","Analyse par Groupes"),
+        (c3,"📚","Suggestions de Cours","Proposer automatiquement des cours similaires à un apprenant selon ses intérêts, pour augmenter les inscriptions.","Recommandation IA"),
     ]:
         with col:
             st.markdown(f"""
@@ -259,7 +259,7 @@ if page == "🏠  Vue Générale":
                 <div class="dso-chip">{chip}</div>
             </div>""", unsafe_allow_html=True)
 
-    st.markdown('<div class="sec">Aperçu du Dataset <span></span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="sec">Aperçu du Catalogue <span></span></div>', unsafe_allow_html=True)
     ca,cb,cc = st.columns(3, gap="medium")
     with ca:
         f,ax = fig(5,3.5)
@@ -298,24 +298,24 @@ if page == "🏠  Vue Générale":
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE 1 — DSO 1
 # ══════════════════════════════════════════════════════════════════════════════
-elif page == "🎯  DSO 1 — Classification":
+if page == "🎯  Prédiction de Popularité":
     st.markdown("""
     <div class="page-header">
-        <div class="page-title">🎯 DSO 1 — Classification Binaire</div>
-        <div class="page-sub">Prédire la popularité d'un cours · XGBoost · CRISP-DM</div>
+        <div class="page-title">🎯 Prédiction de Popularité</div>
+        <div class="page-sub">Estimez si un cours va attirer beaucoup d'apprenants avant même de le publier</div>
     </div>""", unsafe_allow_html=True)
 
     st.markdown(f"""
     <div class="kpi-grid">
-        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#eef2ff;">🎯</div><div class="kpi-badge">Score</div></div><div class="kpi-val">~85%</div><div class="kpi-lbl">Accuracy</div></div>
-        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#ecfdf5;">⚡</div><div class="kpi-badge">Score</div></div><div class="kpi-val">~84%</div><div class="kpi-lbl">F1-Score</div></div>
-        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#fefce8;">📈</div><div class="kpi-badge">Score</div></div><div class="kpi-val">~0.92</div><div class="kpi-lbl">AUC-ROC</div></div>
-        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#f0f9ff;">📊</div><div class="kpi-badge">Seuil</div></div><div class="kpi-val">{threshold:,.0f}</div><div class="kpi-lbl">Inscrits médiane</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#eef2ff;">🎯</div><div class="kpi-badge">Score</div></div><div class="kpi-val">~85%</div><div class="kpi-lbl">Précision globale</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#ecfdf5;">⚡</div><div class="kpi-badge">Score</div></div><div class="kpi-val">~84%</div><div class="kpi-lbl">Équilibre détection</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#fefce8;">📈</div><div class="kpi-badge">Score</div></div><div class="kpi-val">~92%</div><div class="kpi-lbl">Fiabilité du modèle</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#f0f9ff;">📊</div><div class="kpi-badge">Seuil</div></div><div class="kpi-val">{threshold:,.0f}</div><div class="kpi-lbl">Inscrits pour être populaire</div></div>
     </div>""", unsafe_allow_html=True)
 
     col_form, col_imp = st.columns([3,2], gap="large")
     with col_form:
-        st.markdown('<div class="sec">Simulateur <span></span></div>', unsafe_allow_html=True)
+        st.markdown('<div class="sec">Tester un cours <span></span></div>', unsafe_allow_html=True)
         r1,r2 = st.columns(2)
         with r1:
             subject = st.selectbox("Sujet", df['subject'].unique())
@@ -369,21 +369,32 @@ elif page == "🎯  DSO 1 — Classification":
             plt.tight_layout(); st.pyplot(f2)
 
     with col_imp:
-        st.markdown('<div class="sec">Feature Importance <span></span></div>', unsafe_allow_html=True)
+        st.markdown('<div class="sec">Facteurs clés de succès <span></span></div>', unsafe_allow_html=True)
         imp = pd.DataFrame({'F':feat_cols,'S':model.feature_importances_}).sort_values('S',ascending=False).head(10)
+        # Renommer les features en termes lisibles
+        rename_map = {
+            'num_reviews': 'Nombre d\'avis',
+            'reviews_per_sub': 'Taux d\'avis',
+            'num_lectures': 'Nombre de leçons',
+            'content_duration': 'Durée du cours',
+            'lectures_per_hour': 'Densité du contenu',
+            'price': 'Prix',
+            'is_paid': 'Cours payant',
+        }
+        imp['F'] = imp['F'].apply(lambda x: rename_map.get(x, x.replace('subject_','Sujet: ').replace('level_','Niveau: ')))
         f2,ax2 = fig(5,5)
         ax2.barh(imp['F'][::-1], imp['S'][::-1], color=PAL[0], height=.55, alpha=.85)
-        ax2.set_title("Top 10 Features — XGBoost", fontsize=10, fontweight='bold')
+        ax2.set_title("Facteurs clés de succès", fontsize=10, fontweight='bold')
         ax2.spines[['top','right','left','bottom']].set_visible(False)
         ax2.tick_params(left=False, bottom=False)
         plt.tight_layout(); st.pyplot(f2)
 
-        st.markdown('<div class="sec">Distribution Inscrits <span></span></div>', unsafe_allow_html=True)
+        st.markdown('<div class="sec">Répartition des inscriptions <span></span></div>', unsafe_allow_html=True)
         f2,ax2 = fig(5,3)
         ax2.hist(df['num_subscribers'].clip(upper=df['num_subscribers'].quantile(.95)),
                 bins=40, color='#a5b4fc', edgecolor='white', linewidth=.5)
-        ax2.axvline(threshold, color='#4f46e5', linewidth=2, linestyle='--', label=f'Seuil: {threshold:,.0f}')
-        ax2.set_title("Distribution inscrits", fontsize=10, fontweight='bold')
+        ax2.axvline(threshold, color='#4f46e5', linewidth=2, linestyle='--', label=f'Seuil popularité: {threshold:,.0f}')
+        ax2.set_title("Répartition des inscriptions", fontsize=10, fontweight='bold')
         ax2.legend(fontsize=8, framealpha=0)
         ax2.spines[['top','right','left','bottom']].set_visible(False)
         ax2.tick_params(left=False, bottom=False)
@@ -392,11 +403,11 @@ elif page == "🎯  DSO 1 — Classification":
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE 2 — DSO 2
 # ══════════════════════════════════════════════════════════════════════════════
-elif page == "🔵  DSO 2 — Clustering":
+elif page == "🔵  Segmentation des Cours":
     st.markdown("""
     <div class="page-header">
-        <div class="page-title">🔵 DSO 2 — Segmentation des Cours</div>
-        <div class="page-sub">Clustering automatique · KMeans · Score de silhouette optimisé</div>
+        <div class="page-title">🔵 Segmentation des Cours</div>
+        <div class="page-sub">Regroupement automatique des cours en catégories similaires pour mieux comprendre le catalogue</div>
     </div>""", unsafe_allow_html=True)
 
     from sklearn.decomposition import PCA
@@ -415,50 +426,50 @@ elif page == "🔵  DSO 2 — Clustering":
 
     st.markdown(f"""
     <div class="kpi-grid">
-        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#eef2ff;">🔵</div><div class="kpi-badge">K</div></div><div class="kpi-val">{best_k}</div><div class="kpi-lbl">Clusters optimaux</div></div>
-        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#ecfdf5;">📐</div><div class="kpi-badge">Score</div></div><div class="kpi-val">{best_sil:.3f}</div><div class="kpi-lbl">Silhouette</div></div>
-        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#fefce8;">📦</div><div class="kpi-badge">Max</div></div><div class="kpi-val">{csizes.max()}</div><div class="kpi-lbl">Plus grand cluster</div></div>
-        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#f0f9ff;">📏</div><div class="kpi-badge">Min</div></div><div class="kpi-val">{csizes.min()}</div><div class="kpi-lbl">Plus petit cluster</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#eef2ff;">🔵</div><div class="kpi-badge">Nb</div></div><div class="kpi-val">{best_k}</div><div class="kpi-lbl">Groupes identifiés</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#ecfdf5;">📐</div><div class="kpi-badge">Score</div></div><div class="kpi-val">{best_sil:.3f}</div><div class="kpi-lbl">Qualité des groupes</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#fefce8;">📦</div><div class="kpi-badge">Max</div></div><div class="kpi-val">{csizes.max()}</div><div class="kpi-lbl">Plus grand groupe</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#f0f9ff;">📏</div><div class="kpi-badge">Min</div></div><div class="kpi-val">{csizes.min()}</div><div class="kpi-lbl">Plus petit groupe</div></div>
     </div>""", unsafe_allow_html=True)
 
     csc, csil = st.columns([3,2], gap="large")
     with csc:
-        st.markdown('<div class="sec">Visualisation PCA 2D <span></span></div>', unsafe_allow_html=True)
+        st.markdown('<div class="sec">Carte des cours <span></span></div>', unsafe_allow_html=True)
         f2,ax2 = fig(7,5)
         for i in range(best_k):
             mask = labels==i
             ax2.scatter(coords[mask,0], coords[mask,1], c=PAL[i%len(PAL)],
-                       s=20, alpha=.65, label=f"Cluster {i}", edgecolors='white', linewidths=.3)
-        ax2.set_title(f"Segmentation en {best_k} clusters — PCA", fontsize=11, fontweight='bold')
+                       s=20, alpha=.65, label=f"Groupe {i+1}", edgecolors='white', linewidths=.3)
+        ax2.set_title(f"Carte des {best_k} groupes de cours", fontsize=11, fontweight='bold')
         ax2.legend(fontsize=8, framealpha=0)
         ax2.spines[['top','right','left','bottom']].set_visible(False)
         ax2.tick_params(left=False, bottom=False)
         plt.tight_layout(); st.pyplot(f2)
 
     with csil:
-        st.markdown('<div class="sec">Taille des clusters <span></span></div>', unsafe_allow_html=True)
+        st.markdown('<div class="sec">Taille des groupes <span></span></div>', unsafe_allow_html=True)
         f2,ax2 = fig(5,3)
-        bars = ax2.bar([f"C{i}" for i in csizes.index], csizes.values,
+        bars = ax2.bar([f"Groupe {i+1}" for i in csizes.index], csizes.values,
                       color=PAL[:len(csizes)], width=.6, edgecolor='white', linewidth=1.5)
         ax2.bar_label(bars, fontsize=8, padding=3, color='#6b7280')
         ax2.spines[['top','right','left','bottom']].set_visible(False)
         ax2.tick_params(left=False, bottom=False)
         plt.tight_layout(); st.pyplot(f2)
 
-    st.markdown('<div class="sec">Profil moyen par Cluster <span></span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="sec">Profil moyen par Groupe <span></span></div>', unsafe_allow_html=True)
     prof = df2[df2['cluster']>=0].groupby('cluster')[feats+['num_subscribers']].mean().round(2)
     prof['Nb cours'] = df2['cluster'].value_counts().sort_index()
-    prof.index = [f"Cluster {i}" for i in prof.index]
+    prof.index = [f"Groupe {i+1}" for i in prof.index]
     prof.columns = ['Prix','Avis','Leçons','Durée(h)','Avis/Sub','Leçons/h','Inscrits','Nb cours']
     st.dataframe(prof.style.background_gradient(cmap='Blues'), use_container_width=True)
 
-    st.markdown('<div class="sec">Sujets par Cluster <span></span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="sec">Catégories par Groupe <span></span></div>', unsafe_allow_html=True)
     df2m = df2.copy(); df2m['subject'] = df['subject'].values
     cross = pd.crosstab(df2m['cluster'], df2m['subject'])
-    cross.index = [f"Cluster {i}" for i in cross.index]
+    cross.index = [f"Groupe {i+1}" for i in cross.index]
     f2,ax2 = fig(12,3.5)
     cross.plot(kind='bar', ax=ax2, width=.7, color=PAL[:len(cross.columns)])
-    ax2.set_title("Distribution sujets par cluster", fontsize=11, fontweight='bold')
+    ax2.set_title("Répartition des catégories par groupe", fontsize=11, fontweight='bold')
     ax2.set_xlabel(""); ax2.tick_params(axis='x', rotation=0, labelsize=9)
     ax2.legend(fontsize=8, loc='upper right', framealpha=0)
     ax2.spines[['top','right','left','bottom']].set_visible(False)
@@ -468,45 +479,45 @@ elif page == "🔵  DSO 2 — Clustering":
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE 3 — DSO 3
 # ══════════════════════════════════════════════════════════════════════════════
-elif page == "📚  DSO 3 — Recommandation":
+elif page == "📚  Suggestions de Cours":
     st.markdown("""
     <div class="page-header">
-        <div class="page-title">📚 DSO 3 — Moteur de Recommandation</div>
-        <div class="page-sub">Système basé sur le contenu · TF-IDF + KNN · Similarité cosinus</div>
+        <div class="page-title">📚 Suggestions de Cours</div>
+        <div class="page-sub">Trouvez des cours similaires à celui qui vous intéresse, en un clic</div>
     </div>""", unsafe_allow_html=True)
 
     st.markdown(f"""
     <div class="kpi-grid">
-        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#eef2ff;">📚</div><div class="kpi-badge">Total</div></div><div class="kpi-val">{len(df):,}</div><div class="kpi-lbl">Cours indexés</div></div>
-        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#ecfdf5;">🔤</div><div class="kpi-badge">TF-IDF</div></div><div class="kpi-val">5K</div><div class="kpi-lbl">Features</div></div>
-        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#fefce8;">📐</div><div class="kpi-badge">Métrique</div></div><div class="kpi-val">Cosine</div><div class="kpi-lbl">Similarité</div></div>
-        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#f0f9ff;">⚡</div><div class="kpi-badge">Algo</div></div><div class="kpi-val">Brute</div><div class="kpi-lbl">KNN</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#eef2ff;">📚</div><div class="kpi-badge">Total</div></div><div class="kpi-val">{len(df):,}</div><div class="kpi-lbl">Cours disponibles</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#ecfdf5;">�</div><div class="kpi-badge">Analyse</div></div><div class="kpi-val">Contenu</div><div class="kpi-lbl">Basé sur le titre</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#fefce8;">📐</div><div class="kpi-badge">Méthode</div></div><div class="kpi-val">Similarité</div><div class="kpi-lbl">Entre les cours</div></div>
+        <div class="kpi-card"><div class="kpi-top"><div class="kpi-icon" style="background:#f0f9ff;">⚡</div><div class="kpi-badge">Vitesse</div></div><div class="kpi-val">Rapide</div><div class="kpi-lbl">Résultats instantanés</div></div>
     </div>""", unsafe_allow_html=True)
 
-    st.markdown('<div class="sec">Filtres & Sélection <span></span></div>', unsafe_allow_html=True)
+    st.markdown('<div class="sec">Filtres <span></span></div>', unsafe_allow_html=True)
     f1,f2,f3,f4 = st.columns([2,2,2,1])
-    with f1: sf = st.selectbox("Sujet", ["Tous"]+sorted(df['subject'].unique().tolist()))
+    with f1: sf = st.selectbox("Catégorie", ["Toutes"]+sorted(df['subject'].unique().tolist()))
     with f2: lf = st.selectbox("Niveau", ["Tous"]+sorted(df['level'].unique().tolist()))
-    with f3: tf = st.radio("Type", ["Tous","Payants","Gratuits"], horizontal=True)
-    with f4: top_n = st.slider("Recs", 3, 10, 6)
+    with f3: tf = st.radio("Prix", ["Tous","Payants","Gratuits"], horizontal=True)
+    with f4: top_n = st.slider("Suggestions", 3, 10, 6)
 
     dff = df.copy()
-    if sf!="Tous": dff = dff[dff['subject']==sf]
+    if sf!="Toutes": dff = dff[dff['subject']==sf]
     if lf!="Tous": dff = dff[dff['level']==lf]
     if tf=="Payants": dff = dff[dff['price']>0]
     elif tf=="Gratuits": dff = dff[dff['price']==0]
     if dff.empty: st.warning("Aucun cours ne correspond aux filtres."); st.stop()
 
-    selected = st.selectbox("Cours de référence", dff['course_title'].tolist())
+    selected = st.selectbox("Choisir un cours", dff['course_title'].tolist())
     cb,_ = st.columns([1,4])
-    with cb: run = st.button("Trouver des cours similaires →", use_container_width=True)
+    with cb: run = st.button("Voir les cours similaires →", use_container_width=True)
 
     if run:
         ref = df[df['course_title']==selected].iloc[0]
         paid_str = f"{int(ref['price'])}$" if ref['price']>0 else "Gratuit"
         st.markdown(f"""
         <div class="card" style="border-left:4px solid #4f46e5;">
-            <div style="font-size:.68rem;color:#4f46e5;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem;">Cours de référence</div>
+            <div style="font-size:.68rem;color:#4f46e5;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:.4rem;">Cours sélectionné</div>
             <div style="font-size:1rem;font-weight:700;color:#111827;margin-bottom:.4rem;">{ref['course_title']}</div>
             <div style="font-size:.8rem;color:#9ca3af;">
                 {ref['subject']} · {ref['level']} · {paid_str} · {int(ref['num_subscribers']):,} inscrits · {int(ref['num_reviews']):,} avis · {int(ref['num_lectures'])} leçons
@@ -521,7 +532,7 @@ elif page == "📚  DSO 3 — Recommandation":
 
         cl,cr = st.columns([3,2], gap="large")
         with cl:
-            st.markdown('<div class="sec">Cours recommandés <span></span></div>', unsafe_allow_html=True)
+            st.markdown('<div class="sec">Cours similaires suggérés <span></span></div>', unsafe_allow_html=True)
             for i,row in recs.iterrows():
                 pct = row['similarity']*100
                 pr  = f"{int(row['price'])}$" if row['price']>0 else "Gratuit"
@@ -537,7 +548,7 @@ elif page == "📚  DSO 3 — Recommandation":
                 </div>""", unsafe_allow_html=True)
 
         with cr:
-            st.markdown('<div class="sec">Scores de similarité <span></span></div>', unsafe_allow_html=True)
+            st.markdown('<div class="sec">Taux de ressemblance <span></span></div>', unsafe_allow_html=True)
             f2,ax2 = fig(5,4)
             colors = ['#4f46e5' if s>=recs['similarity'].mean() else '#c7d2fe' for s in recs['similarity']]
             bars = ax2.bar(range(1,len(recs)+1), recs['similarity']*100,
@@ -546,7 +557,7 @@ elif page == "📚  DSO 3 — Recommandation":
             ax2.set_xticks(range(1,len(recs)+1))
             ax2.set_xticklabels([f"#{i+1}" for i in range(len(recs))], fontsize=8)
             ax2.bar_label(bars, fmt='%.0f%%', fontsize=7, padding=2, color='#6b7280')
-            ax2.set_title("Similarité cosinus (%)", fontsize=10, fontweight='bold')
+            ax2.set_title("Taux de ressemblance (%)", fontsize=10, fontweight='bold')
             ax2.spines[['top','right','left','bottom']].set_visible(False)
             ax2.tick_params(left=False, bottom=False)
             plt.tight_layout(); st.pyplot(f2)
